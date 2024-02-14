@@ -72,7 +72,7 @@ app.layout = html.Div(
         html.Button('Confirm change', id='confirm-button', n_clicks=0),
         html.P(''),
         html.Button('Save and Close', id='save-close-button',style={'color': 'red'}),
-        html.P('Save and Close', id='save-close-button-message', style={'color': 'red'})
+        html.P('', id='save-close-button-message', style={'color': 'red'})
 
     ]
 )
@@ -173,7 +173,7 @@ def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True,port=8051)
 
 
 # Define the callback function to update the message
@@ -186,7 +186,7 @@ def save_and_close(n_clicks):
         container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)
         return "Saved - you can now close this window"
     
-    return ""
+    #return ""
 
 
 
