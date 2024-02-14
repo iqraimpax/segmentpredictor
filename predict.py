@@ -72,6 +72,8 @@ app.layout = html.Div(
         html.Button('Confirm change', id='confirm-button', n_clicks=0),
         html.P(''),
         html.Button('Save and Close', id='save-close-button',style={'color': 'red'}),
+        html.P('Save and Close', id='save-close-button-message', style={'color': 'red'})
+
     ]
 )
 
@@ -92,13 +94,27 @@ def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
         input_str = df.iloc[i, :].tolist()
 
         new_row = html.Tr([
-            html.Td(current_row.name),
-            html.Td(current_row['Company']),
-            html.Td(current_row['Segment']),
-            html.Td(current_row['Segment Description']),
-            html.Td(current_row['Predicted'])
+           html.Td(
+               current_row.name,
+               style={'padding': '10px'}
+           ),
+           html.Td(
+               current_row['Company'], 
+               style={'padding': '10px'}
+           ),
+           html.Td(
+               current_row['Segment'],
+               style={'padding': '10px'} 
+           ),
+           html.Td(
+               current_row['Segment Description'],
+               style={'padding': '10px'}
+           ), 
+           html.Td(
+               current_row['Predicted'],
+               style={'padding': '10px'}
+           )
         ])
-
         current_row = df.iloc[i-1]
         new_row_values = [current_row.name, current_row['Company'], current_row['Segment'], current_row['Segment Description'], current_row['text'], current_row['Predicted'], dropdown_value]
         print(new_row_values)
@@ -117,18 +133,33 @@ def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
         current_row = df.iloc[current_row_index]
 
         new_row = html.Tr([
-            html.Td(current_row.name),
-            html.Td(current_row['Company']),
-            html.Td(current_row['Segment']),
-            html.Td(current_row['Segment Description']),
-            html.Td(current_row['Predicted'])
+           html.Td(
+               current_row.name,
+               style={'padding': '10px'}
+           ),
+           html.Td(
+               current_row['Company'], 
+               style={'padding': '10px'}
+           ),
+           html.Td(
+               current_row['Segment'],
+               style={'padding': '10px'} 
+           ),
+           html.Td(
+               current_row['Segment Description'],
+               style={'padding': '10px'}
+           ), 
+           html.Td(
+               current_row['Predicted'],
+               style={'padding': '10px'}
+           )
         ])
         current_row = df.iloc[i-1]
         new_row_values = [current_row.name, current_row['Company'], current_row['Segment'], current_row['Segment Description'], current_row['text'], current_row['Predicted'], current_row['Predicted']]
         print(new_row_values)
         
         corrected.loc[len(corrected)] = new_row_values
-        updated_content = corrected.to_csv(blob_name, index=False)
+        #updated_content = corrected.to_csv(blob_name, index=False)
         #container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)
 
 
@@ -142,25 +173,21 @@ def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True,port=8051)
 
 
-# In[ ]:
+# Define the callback function to update the message
 @app.callback(
-   Output('save-close-button', 'n_clicks'), 
-   Input('save-close-button', 'n_clicks')
+    Output('save-close-button-message', 'children'),
+    [Input('save-close-button', 'n_clicks')]
 )
 def save_and_close(n_clicks):
     if n_clicks:
+        container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)
+        return "Saved - you can now close this window"
+    
+    return ""
 
-        container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)  
-
-        print("Saved to Azure and closing program")
-           
-        import os
-        os._exit(0)
-
-    return n_clicks
 
 
 
