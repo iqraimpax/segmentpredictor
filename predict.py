@@ -173,7 +173,7 @@ def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True,port=8051)
+    app.run_server(debug=True)
 
 
 # Define the callback function to update the message
