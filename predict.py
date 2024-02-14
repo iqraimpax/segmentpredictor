@@ -58,6 +58,7 @@ app.layout = html.Div(
         ),
         
         html.P('Click Next if the prediction is right'),
+        html.P(''),
         html.Button('Next Row', id='next-button', n_clicks=0),
        
         html.P('Or if the prediction is wrong, select from the dropdown list'),
@@ -67,7 +68,10 @@ app.layout = html.Div(
             options=options,
             value=None
         ),
+        html.P(''),
         html.Button('Confirm change', id='confirm-button', n_clicks=0),
+        html.P(''),
+        html.Button('Save and Close', id='save-close-button',style={'color': 'red'}),
     ]
 )
 
@@ -79,6 +83,7 @@ app.layout = html.Div(
 )
 def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
     global i
+    global corrected
     ctx = dash.callback_context
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
@@ -100,7 +105,7 @@ def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
         
         corrected.loc[len(corrected)] = new_row_values
         #updated_content = corrected.to_csv(blob_name, index=False)
-        container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)
+        #container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)
 
 
         print("New row added and saved to Azure Blob Storage.")
@@ -124,7 +129,7 @@ def update_table(n_clicks_next, n_clicks_confirm, dropdown_value):
         
         corrected.loc[len(corrected)] = new_row_values
         updated_content = corrected.to_csv(blob_name, index=False)
-        container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)
+        #container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)
 
 
         print("New row added and saved to Azure Blob Storage.")
@@ -141,7 +146,21 @@ if __name__ == '__main__':
 
 
 # In[ ]:
+@app.callback(
+   Output('save-close-button', 'n_clicks'), 
+   Input('save-close-button', 'n_clicks')
+)
+def save_and_close(n_clicks):
+    if n_clicks:
 
+        container_client.upload_blob(blob_name, corrected.to_csv(), overwrite=True)  
+
+        print("Saved to Azure and closing program")
+           
+        import os
+        os._exit(0)
+
+    return n_clicks
 
 
 
